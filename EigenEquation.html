@@ -1,0 +1,339 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!--<script src="eigenscript.js"></script>-->
+    <style>
+        .matrixData{
+            width: 50px;
+            margin: 5px;
+        }
+        h1{
+            font-weight: bold;
+            text-align: center;
+        }
+        p{
+            font-weight: bold;
+        }
+        button{
+            border: 2px solid black;
+            background-color: brown;   
+            color: white;
+        }
+        #dimensional{
+            margin-left: 10px;
+        }
+        #update{
+            display: none;
+        }
+    </style>
+    <script>
+        var counts = 0;
+        function trigger(even){
+    if(even.which == 13){
+        makeMatrix();
+    }
+    if(even.which<48 || even.which>57){
+        counts++;
+        if(counts == 3){
+            alert("Enter proper values");
+            counts = 0;
+        }
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+var count = 0;
+function triggers(even,wer){
+    console.log("triggger");
+    console.log(wer);
+    if((even.which>=48 && even.which<=57) || even.which == 46 || even.which == 45){
+        console.log("enterpos");
+        if(even.which==46){
+            if(checkdot(wer)){
+                return(true);
+                
+            }
+            else{
+                count++;
+                if(count == 3){
+                alert("Enter proper values");
+                count = 0;
+            }
+                return(false);
+            }
+        }
+        else if(even.which == 45){
+            if(checkminus(wer)){
+                return(true);
+            }
+            else{
+                count++;
+                if(count == 3){
+                    alert("Enter proper values");
+                    count = 0;
+                }
+                return(false);
+            }
+        }
+        else{
+            return(true);
+        }
+        }
+    else{
+        count++;
+        if(count == 3){
+             alert("Enter proper values");
+             count = 0;
+        }
+        return(false);
+    }
+}
+function checkminus(myTextBox)
+{
+    console.log(myTextBox);
+    if(myTextBox == "")
+    return true;
+    else
+    return false;
+}
+function setEnter(){
+    console.log(event.target);
+    if(event.which==13)
+    (event.target).next();
+    if (window.event && window.event.keyCode == 13) {
+        window.event.keyCode = 9;
+    }
+}
+function checkdot(wer){
+    console.log(wer);
+    for(let i = 0;i<wer.length;i++){
+        if(wer.charAt(i)=='.')
+        return false;
+    }
+    return true;
+}
+var matrix = [];
+var minor = [];
+function makeMatrix(){
+    document.getElementById("warning").style.display = "none";
+    document.getElementById("update").style.display = "unset";
+    var a = parseInt(document.getElementById("dimension").value);
+    var makeMatrixData = document.createElement("input");
+    makeMatrixData.setAttribute("class","matrixData");
+    makeMatrixData.setAttribute("onkeypress","return triggers(event,value)");
+    makeMatrixData.setAttribute("onkeyup","setEnter()");
+    var whys = document.getElementById("matrixMaker");
+    whys.innerHTML = "";
+    for(let i = 0; i<a;i++)
+    {
+        for(let j = 0;j<a;j++)
+        {
+            whys.appendChild(makeMatrixData);
+            whys.innerHTML += " ";
+        }
+        whys.innerHTML += "<br>";
+    }
+}
+function initialiser(b,a){
+    for(let i=0;i<a;i++){
+        b[i] = [];
+    }
+    for(let i=0;i<a;i++){
+        for(let j=0;j<a;j++){
+            b[i][j] = [];
+        }
+    }
+    return b;
+}
+function update(){
+    var a = parseInt(document.getElementById("dimension").value);
+    var data = document.getElementsByClassName("matrixData");
+    var k = 0;
+    matrix = initialiser(matrix,a);
+    for(let i=0;i<a;i++)
+    {
+        for(let j=0;j<a;j++)
+        {
+            console.log(data[k].value);
+            if(data[k].value=="")
+            {
+                data[k].value = 0;
+                data[k].style.color = "red";
+            }
+            matrix[i][j][0] = parseFloat(data[k++].value);
+        }
+    }
+    for(let i = 0;i<a;i++){
+        matrix[i][i][1] = -1
+    }
+    //console.log(matrix);
+    var result = computeDeterminant(matrix,a);
+    console.log("result",result);
+    var textCharacteristics = document.createTextNode("The characteristic equation of the given Matrix is: ");
+    var resultShow = document.getElementById("showResult");
+    resultShow.innerHTML = "";
+    resultShow.appendChild(textCharacteristics);
+    var lambda = "\u03BB";
+    for(let i = result.length-1;i>=0;i--){
+        if(result[i]==0){
+            continue;
+        }
+        else if(i==Math.abs(a)){
+            if(result[i]>0)
+            resultShow.innerHTML += lambda+"<sup>"+i+"</sup>"+" ";
+            else
+            resultShow.innerHTML += "-"+lambda+"<sup>"+i+"</sup>"+" ";
+        }
+        else if(result[i]==1 && i!=0){
+            if(i!=1)
+            resultShow.innerHTML += "+"+lambda+"<sup>"+i+"</sup>"+" ";
+            else
+            resultShow.innerHTML += lambda+" ";
+        }
+        else if(result[i]==-1 && i!=0){
+            if(i!=1)
+            resultShow.innerHTML += "-"+lambda+"<sup>"+i+"</sup>";
+            else
+            resultShow.innerHTML += "-"+lambda+" ";
+        }
+        else if(i==0){
+            if(result[i]>0)
+            resultShow.innerHTML += "+"+result[i];
+            else
+            resultShow.innerHTML += result[i];
+        }
+        else if(i==1){
+            if(result[i]>0)
+            resultShow.innerHTML += "+"+result[i]+lambda+" ";
+            else
+            resultShow.innerHTML += result[i]+lambda+" ";
+        }
+        else{
+            if(result[i]>0)
+            resultShow.innerHTML += "+"+result[i]+lambda+"<sup>"+i+"</sup>"+" ";
+            else
+            resultShow.innerHTML += result[i]+lambda+"<sup>"+i+"</sup>"+" ";
+        }
+    }
+    resultShow.innerHTML += " = 0";
+}
+function computeDeterminant(matrix,l){
+    console.log("Displaying",matrix);
+    if(matrix.length == 2){
+        //console.log("superb",matrix[0][0]);
+        var temp1 = multiply(matrix[0][0],matrix[1][1],(matrix[0][0]).length,(matrix[1][1]).length);
+        var temp2 = multiply(matrix[0][1],matrix[1][0],(matrix[0][1]).length,(matrix[1][0]).length);
+        return (subtract(temp1,temp2,temp1.length,temp2.length));
+    }
+    else
+    {
+        let mix = 0;
+        var result = [];
+        minor = initialiser(minor,l-1);
+        for(mix=0;mix<l;mix++){
+            var k = 0;
+            var b = [];
+    let d = [];
+    for(let i=0;i<(l-1)*(l-1);i++){
+        d[i] = [];
+    }
+    for(let i = 1 ;i < l;i++)
+    {
+        for(let j=0;j<l;j++)
+        {
+            if(j!=mix){
+                d[k++] = matrix[i][j];
+            }
+        }
+    }
+    k = 0;
+    for(let i = 0;i<(l-1);i++)
+    {
+        b[i] = [0];
+    }
+    for(let i = 0;i<(l-1);i++)
+    {
+        for(let j = 0;j<(l-1);j++){
+            b[i][j] = 0;
+        }
+    }
+    for(let i = 0;i<(l-1);i++)
+    {
+        for(let j = 0;j<(l-1);j++){
+            for(let f = 0;f<2;f++)
+            b[i][j][f] = 0;
+        }
+    }
+    for(let i = 0;i<(l-1);i++)
+    {
+        for(let j = 0;j<(l-1);j++){
+            b[i][j] = d[k++];
+        }
+    }
+    console.log("d",d);
+            console.log("displayingMinor",b);
+            var temp4 = computeDeterminant(b,l-1);
+            var temp3 = multiply(matrix[0][mix],temp4,(matrix[0][mix]).length,temp4.length);
+            console.log("temp3 executes")
+            if(mix%2==0)
+            {
+                result = add(temp3,result,temp3.length,result.length);
+            }
+            else
+            {
+                result = subtract(result,temp3,temp3.length,result.length);
+            }
+        }   
+    }
+    return(result);
+}
+function multiply(a,b,c,d){
+    var product = [];
+    for(let i =0;i<(c+d);i++){
+        product[i] = 0
+    }
+    for(let i = 0; i<c;i++){
+        for(let j = 0;j<d;j++){
+            product[i+j] += a[i]*b[j];
+        }
+    }
+    console.log("product",product);
+    return(product);
+}
+function add(a,b,c,d){
+    var addition = [];
+    console.log("add",a,b);
+    for(let i =0;i<Math.max(c,d);i++){
+        addition[i] = (a[i] || 0)+ (b[i] || 0);
+    }
+    return(addition);
+    console.log("add",addition);
+}
+function subtract(a,b,c,d){
+    var sub = [];
+    for(let i =0;i<Math.max(c,d);i++){
+        sub[i] = (a[i] || 0) - (b[i] || 0);
+    }
+    console.log("subtract",sub);
+    return(sub);
+}
+    </script>
+</head>
+<body>
+    <h1>Eigen value equation calculator</h1>
+    <p>Enter the dimension of matrix: 
+        <input type="text" onkeypress="return trigger(event)" id="dimension">
+        <button id = "dimensional"onclick="makeMatrix(event)">make matrix</button>
+    </p>
+    <p id = "warning">You are requested to enter integer value only</p>
+    <main id="matrixMaker"></main>
+    <button onclick="update()" id ="update">calculate</button>
+    <div id="showResult"></div>
+</body>
+</html>
