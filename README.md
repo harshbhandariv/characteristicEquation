@@ -1,2 +1,2 @@
 # Characteristic Equation
-finding the characteristic equation of matrix
+Finding the characteristic equation of matrix
